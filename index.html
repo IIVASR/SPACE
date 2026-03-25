@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>祭祀台迷宫·时轮天盘 | 特殊时段开放冬·双鱼·C·祭祀台</title>
+    <title>祭祀台迷宫·时轮天盘 | 地图逆时针旋转180° 0:40东西向直通</title>
     <style>
         * {
             box-sizing: border-box;
@@ -210,11 +210,11 @@
     <div class="time-control">
         <div class="time-input-group">
             <label>⏣ 时轮刻度 ⏣</label>
-            <input type="time" id="timeInput" value="0:00" step="60">
+            <input type="time" id="timeInput" value="0:40" step="60">
         </div>
         <button id="applyTimeBtn">⚙️ 推演天机 · 显现地图</button>
-        <div class="current-time-badge" id="displayTime">当前: 00:00</div>
-        <div class="small-note">特殊时段(21:00-6:00)房间静止，冬·双鱼·C·祭祀台直通(水平)</div>
+        <div class="current-time-badge" id="displayTime">当前: 00:40</div>
+        <div class="small-note">特殊时段(20:00-7:00)动态旋转，仅春·秋·天蝎·E·祭祀台可通行</div>
     </div>
 
     <div class="dashboard">
@@ -242,14 +242,14 @@
                 </ul>
             </div>
             <div class="altar-note">
-                🧭 祭祀台仅有一个入口，0:00指向正东(90°)<br>
-                特殊时段(21:00-6:00)所有房间静止，且冬·双鱼·C·祭祀台强制直通(水平方向)。
+                🧭 祭祀台仅有一个入口，0:40时指向正东(90°)，地图已整体逆时针旋转180°<br>
+                特殊时段(20:00-7:00)房间正常旋转，仅【春·秋·天蝎·E·祭祀台】未锁，其余上锁。
             </div>
             <hr>
             <div class="small-note">
                 ※ 四季(顺)120min/圈 → 移动15min·停15min；星座(逆)240min/圈 → 移动10min·停10min；<br>
                 行星(顺)240min/圈 → 移动10min·停10min；祭祀台(逆)240min/圈 → 移动10min·停10min。<br>
-                ※ 特殊时段 21:00-06:00 房间静止，仅【冬·双鱼·C·祭祀台】未锁且直通(水平方向)。
+                ※ 特殊时段 20:00-07:00 房间动态旋转，仅【春·秋·天蝎·E·祭祀台】未锁，其余房间门扉永久关闭。
             </div>
         </div>
     </div>
@@ -257,22 +257,21 @@
 
 <script>
     (function() {
-        // ======================= 房间定义（逆时针旋转90°后，夏、处女、M位于正北的版本基础上整体旋转90°） =======================
-        // 最终角度如下（与上一版本完全相同）：
-        // 夏: 270°, 秋: 0°, 冬: 90°, 春: 180°
-        // 处女: 270°, 水瓶: 300°, 天蝎: 330°, 巨蟹: 0°, 摩羯: 30°, 天秤: 60°, 双鱼: 90°, 白羊: 120°, 狮子: 150°, 金牛: 180°, 双子: 210°, 射手: 240°
-        // 行星: M: 270°, H: 330°, G: 30°, C: 90°, P: 150°, E: 210°
-        // 祭祀台: 90°
+        // ======================= 房间定义（在上次逆时针旋转90°的基础上再逆时针旋转180°） =======================
+        // 上次旋转90°后的初始角度（以0:00为基准）：
+        // 春300°,夏30°,秋120°,冬210°
+        // 星座：天蝎150°,巨蟹180°,摩羯210°,天秤240°,双鱼270°,白羊300°,狮子330°,金牛0°,双子30°,射手60°,处女90°,水瓶120°
+        // 行星：E30°,M90°,H150°,G210°,C270°,P330°
+        // 祭祀台150°
+        // 再逆时针旋转180°，每个角度 +180° mod 360：
         const seasons = [
-            { id: "summer", name: "夏", type: "season", initAngle: 270, ring: "seasonRing" },
-            { id: "autumn", name: "秋", type: "season", initAngle: 0, ring: "seasonRing" },
-            { id: "winter", name: "冬", type: "season", initAngle: 90, ring: "seasonRing" },
-            { id: "spring", name: "春", type: "season", initAngle: 180, ring: "seasonRing" }
+            { id: "spring", name: "春", type: "season", initAngle: 120, ring: "seasonRing" },
+            { id: "summer", name: "夏", type: "season", initAngle: 210, ring: "seasonRing" },
+            { id: "autumn", name: "秋", type: "season", initAngle: 300, ring: "seasonRing" },
+            { id: "winter", name: "冬", type: "season", initAngle: 30, ring: "seasonRing" }
         ];
 
         const zodiacs = [
-            { id: "virgo", name: "处女", type: "zodiac", initAngle: 270, ring: "zodiacRing" },
-            { id: "aquarius", name: "水瓶", type: "zodiac", initAngle: 300, ring: "zodiacRing" },
             { id: "scorpio", name: "天蝎", type: "zodiac", initAngle: 330, ring: "zodiacRing" },
             { id: "cancer", name: "巨蟹", type: "zodiac", initAngle: 0, ring: "zodiacRing" },
             { id: "capricorn", name: "摩羯", type: "zodiac", initAngle: 30, ring: "zodiacRing" },
@@ -282,20 +281,22 @@
             { id: "leo", name: "狮子", type: "zodiac", initAngle: 150, ring: "zodiacRing" },
             { id: "taurus", name: "金牛", type: "zodiac", initAngle: 180, ring: "zodiacRing" },
             { id: "gemini", name: "双子", type: "zodiac", initAngle: 210, ring: "zodiacRing" },
-            { id: "sagittarius", name: "射手", type: "zodiac", initAngle: 240, ring: "zodiacRing" }
+            { id: "sagittarius", name: "射手", type: "zodiac", initAngle: 240, ring: "zodiacRing" },
+            { id: "virgo", name: "处女", type: "zodiac", initAngle: 270, ring: "zodiacRing" },
+            { id: "aquarius", name: "水瓶", type: "zodiac", initAngle: 300, ring: "zodiacRing" }
         ];
 
         const planets = [
+            { id: "E", name: "E", type: "planet", initAngle: 210, ring: "planetRing" },
             { id: "M", name: "M", type: "planet", initAngle: 270, ring: "planetRing" },
             { id: "H", name: "H", type: "planet", initAngle: 330, ring: "planetRing" },
             { id: "G", name: "G", type: "planet", initAngle: 30, ring: "planetRing" },
             { id: "C", name: "C", type: "planet", initAngle: 90, ring: "planetRing" },
-            { id: "P", name: "P", type: "planet", initAngle: 150, ring: "planetRing" },
-            { id: "E", name: "E", type: "planet", initAngle: 210, ring: "planetRing" }
+            { id: "P", name: "P", type: "planet", initAngle: 150, ring: "planetRing" }
         ];
 
-        // 祭祀台初始角度90°（正东）
-        const altar = { id: "altar", name: "祭祀台", type: "altar", initAngle: 90, ring: "altarRing" };
+        // 祭祀台初始角度150° + 180° = 330°
+        const altar = { id: "altar", name: "祭祀台", type: "altar", initAngle: 330, ring: "altarRing" };
 
         const ROOMS = {};
         [...seasons, ...zodiacs, ...planets, altar].forEach(r => { ROOMS[r.id] = r; });
@@ -343,22 +344,14 @@
             return finalAngle % 360;
         }
 
+        // 特殊时段 20:00 - 7:00
         function isSpecialTime(totalMinutes) {
             const hour24 = (totalMinutes / 60) % 24;
-            return (hour24 >= 21 || hour24 < 6);
+            return (hour24 >= 20 || hour24 < 7);
         }
 
+        // 所有时段均按正常旋转规律计算角度
         function getCurrentAngle(room, totalMinutes) {
-            if (isSpecialTime(totalMinutes)) {
-                // 特殊时段：冬、双鱼、C、祭祀台强制对齐于90°（正东），形成直通
-                const specialFixedIds = ["winter", "pisces", "C", "altar"];
-                if (specialFixedIds.includes(room.id)) {
-                    return 90;
-                } else {
-                    return room.initAngle % 360;
-                }
-            }
-
             const ring = room.ring;
             let offset = 0;
             if (ring === "seasonRing") {
@@ -385,10 +378,10 @@
             return diff <= tolerance;
         }
 
+        // 锁闭判断：特殊时段只允许春、秋、天蝎、E、祭祀台未锁，其余锁闭；常规时段全开放
         function isRoomLocked(roomId, totalMinutes) {
             if (isSpecialTime(totalMinutes)) {
-                // 特殊时段只允许冬、双鱼、C、祭祀台未锁
-                const allowedIds = ["winter", "pisces", "C", "altar"];
+                const allowedIds = ["spring", "autumn", "scorpio", "E", "altar"];
                 return !allowedIds.includes(roomId);
             }
             return false;
@@ -595,7 +588,7 @@
 
             const special = isSpecialTime(totalMinutes);
             const nightNote = special 
-                ? "🌙 夜祷时刻 (21:00-6:00): 房间静止 · 冬·双鱼·C·祭祀台 完全直通(水平)！" 
+                ? "🌙 夜祷时刻 (20:00-7:00): 房间正常旋转，仅【春·秋·天蝎·E·祭祀台】未锁" 
                 : "☀️ 常规时段 · 所有房间动态旋转，角度对齐则开门";
             document.getElementById('timeSpecialNote').innerHTML = nightNote;
 
