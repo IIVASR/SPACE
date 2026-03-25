@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>祭祀台迷宫·时轮天盘 | 特殊时段开放冬·双鱼·C·祭祀台</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: #f5f7fc;
+            font-family: 'Segoe UI', 'Roboto', 'Noto Sans', system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px;
+            margin: 0;
+        }
+
+        .mystic-container {
+            max-width: 1400px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.08), 0 0 0 1px #e2e8f0;
+            padding: 1.5rem;
+        }
+
+        .time-control {
+            background: #f8fafc;
+            border-radius: 1.8rem;
+            padding: 1rem 1.8rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 1.5rem;
+            justify-content: center;
+            border: 1px solid #e2edf2;
+        }
+
+        .time-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .time-input-group label {
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #2c3e66;
+            font-weight: 600;
+        }
+
+        .time-input-group input {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            padding: 0.7rem 1rem;
+            border-radius: 2rem;
+            color: #0f172a;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: center;
+            width: 150px;
+        }
+
+        .time-input-group input:focus {
+            outline: none;
+            border-color: #3b7cbf;
+            box-shadow: 0 0 0 2px #bfdbfe;
+        }
+
+        button {
+            background: #1e466e;
+            border: none;
+            padding: 0.7rem 1.8rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #0f3557;
+            transform: translateY(-1px);
+        }
+
+        .current-time-badge {
+            background: #eef3ff;
+            padding: 0.3rem 1.2rem;
+            border-radius: 3rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            font-family: monospace;
+            color: #1e3a5f;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+        }
+
+        .map-canvas-panel {
+            flex: 2;
+            min-width: 320px;
+            background: #ffffff;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            border: 1px solid #eef2f6;
+        }
+
+        .info-panel {
+            flex: 1.2;
+            min-width: 260px;
+            background: #fefefe;
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            border: 1px solid #e9edf2;
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+
+        canvas {
+            width: 100%;
+            background: #ffffff;
+            border-radius: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05), 0 0 0 1px #e9edf2;
+            display: block;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.7rem;
+            margin-top: 0.8rem;
+            color: #2c3e50;
+            justify-content: center;
+            background: #f9fafb;
+            padding: 0.5rem;
+            border-radius: 2rem;
+        }
+
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .room-status {
+            font-size: 0.85rem;
+            margin-bottom: 1.2rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.7rem;
+        }
+
+        .accessible-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .accessible-list li {
+            background: #f1f5f9;
+            margin: 0.5rem 0;
+            padding: 0.5rem 0.9rem;
+            border-radius: 1.2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            border-left: 4px solid #3b82f6;
+            color: #0f172a;
+        }
+
+        .special-warning {
+            background: #fffbeb;
+            border-radius: 1rem;
+            padding: 0.6rem;
+            text-align: center;
+            font-size: 0.7rem;
+            color: #b45309;
+            border: 1px solid #fed7aa;
+            margin-top: 1rem;
+        }
+        .small-note {
+            font-size: 0.65rem;
+            color: #5b6e8c;
+        }
+        .altar-note {
+            background: #eef2ff;
+            border-radius: 1rem;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.7rem;
+            margin-top: 0.8rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="mystic-container">
+    <div class="time-control">
+        <div class="time-input-group">
+            <label>⏣ 时轮刻度 ⏣</label>
+            <input type="time" id="timeInput" value="0:00" step="60">
+        </div>
+        <button id="applyTimeBtn">⚙️ 推演天机 · 显现地图</button>
+        <div class="current-time-badge" id="displayTime">当前: 00:00</div>
+        <div class="small-note">特殊时段(21:00-6:00)房间静止，冬·双鱼·C·祭祀台直通(水平)</div>
+    </div>
+
+    <div class="dashboard">
+        <div class="map-canvas-panel">
+            <canvas id="ritualCanvas" width="800" height="800" style="width:100%; height:auto; max-width:800px; aspect-ratio:1/1; margin:0 auto; display:block;"></canvas>
+            <div class="legend">
+                <span>🟢 开启的门(已对齐)</span> <span>🔴 未对齐/锁闭</span> <span>✨ 祭祀台(单入口)</span> 
+                <span>🌿 四季(最外)</span> <span>⭐ 星座(中圈)</span> <span>🪐 行星(内圈·英文)</span>
+                <span>▼ 入口方向(祭祀台)</span>
+            </div>
+        </div>
+        <div class="info-panel">
+            <h3>📜 当前时刻·迷宫见闻</h3>
+            <div id="timeSpecialNote" class="special-warning">——</div>
+            <div class="room-status">
+                <strong>🚪 共鸣门扉 (可通行路径)</strong>
+                <ul id="openDoorsList" class="accessible-list">
+                    <li>等待时间注入...</li>
+                </ul>
+            </div>
+            <div class="room-status">
+                <strong>🔮 可踏入房间 (至少一门开启)</strong>
+                <ul id="activeRoomsList" class="accessible-list">
+                    <li>——</li>
+                </ul>
+            </div>
+            <div class="altar-note">
+                🧭 祭祀台仅有一个入口，0:00指向正东(90°)<br>
+                特殊时段(21:00-6:00)所有房间静止，且冬·双鱼·C·祭祀台强制直通(水平方向)。
+            </div>
+            <hr>
+            <div class="small-note">
+                ※ 四季(顺)120min/圈 → 移动15min·停15min；星座(逆)240min/圈 → 移动10min·停10min；<br>
+                行星(顺)240min/圈 → 移动10min·停10min；祭祀台(逆)240min/圈 → 移动10min·停10min。<br>
+                ※ 特殊时段 21:00-06:00 房间静止，仅【冬·双鱼·C·祭祀台】未锁且直通(水平方向)。
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ======================= 房间定义（逆时针旋转90°后，夏、处女、M位于正北的版本基础上整体旋转90°） =======================
+        // 最终角度如下（与上一版本完全相同）：
+        // 夏: 270°, 秋: 0°, 冬: 90°, 春: 180°
+        // 处女: 270°, 水瓶: 300°, 天蝎: 330°, 巨蟹: 0°, 摩羯: 30°, 天秤: 60°, 双鱼: 90°, 白羊: 120°, 狮子: 150°, 金牛: 180°, 双子: 210°, 射手: 240°
+        // 行星: M: 270°, H: 330°, G: 30°, C: 90°, P: 150°, E: 210°
+        // 祭祀台: 90°
+        const seasons = [
+            { id: "summer", name: "夏", type: "season", initAngle: 270, ring: "seasonRing" },
+            { id: "autumn", name: "秋", type: "season", initAngle: 0, ring: "seasonRing" },
+            { id: "winter", name: "冬", type: "season", initAngle: 90, ring: "seasonRing" },
+            { id: "spring", name: "春", type: "season", initAngle: 180, ring: "seasonRing" }
+        ];
+
+        const zodiacs = [
+            { id: "virgo", name: "处女", type: "zodiac", initAngle: 270, ring: "zodiacRing" },
+            { id: "aquarius", name: "水瓶", type: "zodiac", initAngle: 300, ring: "zodiacRing" },
+            { id: "scorpio", name: "天蝎", type: "zodiac", initAngle: 330, ring: "zodiacRing" },
+            { id: "cancer", name: "巨蟹", type: "zodiac", initAngle: 0, ring: "zodiacRing" },
+            { id: "capricorn", name: "摩羯", type: "zodiac", initAngle: 30, ring: "zodiacRing" },
+            { id: "libra", name: "天秤", type: "zodiac", initAngle: 60, ring: "zodiacRing" },
+            { id: "pisces", name: "双鱼", type: "zodiac", initAngle: 90, ring: "zodiacRing" },
+            { id: "aries", name: "白羊", type: "zodiac", initAngle: 120, ring: "zodiacRing" },
+            { id: "leo", name: "狮子", type: "zodiac", initAngle: 150, ring: "zodiacRing" },
+            { id: "taurus", name: "金牛", type: "zodiac", initAngle: 180, ring: "zodiacRing" },
+            { id: "gemini", name: "双子", type: "zodiac", initAngle: 210, ring: "zodiacRing" },
+            { id: "sagittarius", name: "射手", type: "zodiac", initAngle: 240, ring: "zodiacRing" }
+        ];
+
+        const planets = [
+            { id: "M", name: "M", type: "planet", initAngle: 270, ring: "planetRing" },
+            { id: "H", name: "H", type: "planet", initAngle: 330, ring: "planetRing" },
+            { id: "G", name: "G", type: "planet", initAngle: 30, ring: "planetRing" },
+            { id: "C", name: "C", type: "planet", initAngle: 90, ring: "planetRing" },
+            { id: "P", name: "P", type: "planet", initAngle: 150, ring: "planetRing" },
+            { id: "E", name: "E", type: "planet", initAngle: 210, ring: "planetRing" }
+        ];
+
+        // 祭祀台初始角度90°（正东）
+        const altar = { id: "altar", name: "祭祀台", type: "altar", initAngle: 90, ring: "altarRing" };
+
+        const ROOMS = {};
+        [...seasons, ...zodiacs, ...planets, altar].forEach(r => { ROOMS[r.id] = r; });
+
+        // ======================= 潜在连接表 =======================
+        const potentialLinks = [];
+        function addLink(r1, r2) { potentialLinks.push({ from: r1, to: r2 }); }
+
+        const seasonZodiacPairs = [
+            ["spring","cancer"], ["spring","taurus"], ["spring","capricorn"], ["spring","libra"], ["spring","sagittarius"], ["spring","gemini"],
+            ["summer","pisces"], ["summer","virgo"], ["summer","aries"], ["summer","leo"], ["summer","scorpio"],
+            ["autumn","taurus"], ["autumn","cancer"], ["autumn","gemini"], ["autumn","libra"],
+            ["winter","virgo"], ["winter","pisces"], ["winter","aquarius"], ["winter","scorpio"], ["winter","leo"]
+        ];
+        const zodiacPlanetPairs = [
+            ["gemini","P"], ["leo","G"], ["virgo","C"], ["scorpio","E"], ["capricorn","M"], ["pisces","H"],
+            ["libra","P"], ["sagittarius","E"]
+        ];
+        const planetAltarPairs = planets.map(p => [p.id, "altar"]);
+
+        seasonZodiacPairs.forEach(p => addLink(p[0], p[1]));
+        zodiacPlanetPairs.forEach(p => addLink(p[0], p[1]));
+        planetAltarPairs.forEach(p => addLink(p[0], p[1]));
+
+        function arePotentiallyConnected(idA, idB) {
+            return potentialLinks.some(link => (link.from === idA && link.to === idB) || (link.from === idB && link.to === idA));
+        }
+
+        // ======================= 旋转算法 =======================
+        function calcRingOffset(minutes, moveDur, stayDur, stepAngle, direction) {
+            const cycle = (moveDur + stayDur) * (360 / stepAngle);
+            let t = minutes % cycle;
+            const stepsPerCycle = 360 / stepAngle;
+            const segDuration = moveDur + stayDur;
+            let segmentIndex = Math.floor(t / segDuration);
+            if (segmentIndex >= stepsPerCycle) segmentIndex = stepsPerCycle - 1;
+            const segStart = segmentIndex * segDuration;
+            const inSegment = t - segStart;
+            let accumAngle = segmentIndex * stepAngle;
+            if (inSegment < moveDur) {
+                const ratio = inSegment / moveDur;
+                accumAngle += ratio * stepAngle;
+            }
+            let finalAngle = accumAngle * direction;
+            return finalAngle % 360;
+        }
+
+        function isSpecialTime(totalMinutes) {
+            const hour24 = (totalMinutes / 60) % 24;
+            return (hour24 >= 21 || hour24 < 6);
+        }
+
+        function getCurrentAngle(room, totalMinutes) {
+            if (isSpecialTime(totalMinutes)) {
+                // 特殊时段：冬、双鱼、C、祭祀台强制对齐于90°（正东），形成直通
+                const specialFixedIds = ["winter", "pisces", "C", "altar"];
+                if (specialFixedIds.includes(room.id)) {
+                    return 90;
+                } else {
+                    return room.initAngle % 360;
+                }
+            }
+
+            const ring = room.ring;
+            let offset = 0;
+            if (ring === "seasonRing") {
+                offset = calcRingOffset(totalMinutes, 15, 15, 90, 1);
+            } else if (ring === "zodiacRing") {
+                offset = calcRingOffset(totalMinutes, 10, 10, 30, -1);
+            } else if (ring === "planetRing") {
+                offset = calcRingOffset(totalMinutes, 10, 10, 30, 1);
+            } else if (ring === "altarRing") {
+                offset = calcRingOffset(totalMinutes, 10, 10, 30, -1);
+            }
+            let absAngle = (room.initAngle + offset) % 360;
+            if (absAngle < 0) absAngle += 360;
+            return absAngle;
+        }
+
+        function getAltarEntranceAngle(totalMinutes) {
+            return getCurrentAngle(ROOMS["altar"], totalMinutes);
+        }
+
+        function isAligned(angleA, angleB, tolerance = 0.8) {
+            let diff = Math.abs(angleA - angleB);
+            diff = Math.min(diff, 360 - diff);
+            return diff <= tolerance;
+        }
+
+        function isRoomLocked(roomId, totalMinutes) {
+            if (isSpecialTime(totalMinutes)) {
+                // 特殊时段只允许冬、双鱼、C、祭祀台未锁
+                const allowedIds = ["winter", "pisces", "C", "altar"];
+                return !allowedIds.includes(roomId);
+            }
+            return false;
+        }
+
+        function computeOpenDoors(totalMinutes) {
+            const allRoomIds = Object.keys(ROOMS);
+            const angles = {};
+            allRoomIds.forEach(id => { angles[id] = getCurrentAngle(ROOMS[id], totalMinutes); });
+            const altarEntrance = getAltarEntranceAngle(totalMinutes);
+
+            const openDoors = [];
+            for (let i = 0; i < allRoomIds.length; i++) {
+                for (let j = i+1; j < allRoomIds.length; j++) {
+                    const idA = allRoomIds[i];
+                    const idB = allRoomIds[j];
+                    if (!arePotentiallyConnected(idA, idB)) continue;
+
+                    let aligned = false;
+                    if ((idA === "altar" && ROOMS[idB].type === "planet") || (idB === "altar" && ROOMS[idA].type === "planet")) {
+                        const planetId = idA === "altar" ? idB : idA;
+                        const planetAngle = angles[planetId];
+                        if (isAligned(planetAngle, altarEntrance)) aligned = true;
+                    } else {
+                        if (isAligned(angles[idA], angles[idB])) aligned = true;
+                    }
+
+                    if (aligned) {
+                        const lockA = isRoomLocked(idA, totalMinutes);
+                        const lockB = isRoomLocked(idB, totalMinutes);
+                        if (!lockA && !lockB) {
+                            openDoors.push({
+                                from: idA, to: idB,
+                                fromName: ROOMS[idA].name, toName: ROOMS[idB].name
+                            });
+                        }
+                    }
+                }
+            }
+            return openDoors;
+        }
+
+        function getActiveRooms(openDoors, totalMinutes) {
+            const reachable = new Set();
+            openDoors.forEach(door => {
+                if (!isRoomLocked(door.from, totalMinutes)) reachable.add(door.from);
+                if (!isRoomLocked(door.to, totalMinutes)) reachable.add(door.to);
+            });
+            return Array.from(reachable).map(id => ({ id, name: ROOMS[id].name, type: ROOMS[id].type }));
+        }
+
+        // ======================= 绘图 =======================
+        let canvas = document.getElementById('ritualCanvas');
+        let ctx = canvas.getContext('2d');
+
+        function drawMap(totalMinutes) {
+            const size = Math.min(canvas.clientWidth, canvas.clientHeight);
+            canvas.width = size;
+            canvas.height = size;
+            const centerX = size/2, centerY = size/2;
+            const maxRadius = Math.min(centerX, centerY) * 0.82;
+
+            const radiusSeason = maxRadius * 0.92;
+            const radiusZodiac = maxRadius * 0.72;
+            const radiusPlanet = maxRadius * 0.48;
+            const radiusAltar = maxRadius * 0.18;
+
+            ctx.clearRect(0, 0, size, size);
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillRect(0, 0, size, size);
+
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radiusSeason, 0, 2*Math.PI);
+            ctx.strokeStyle = "#dce5ef";
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radiusZodiac, 0, 2*Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radiusPlanet, 0, 2*Math.PI);
+            ctx.stroke();
+
+            const angles = {};
+            Object.keys(ROOMS).forEach(id => { angles[id] = getCurrentAngle(ROOMS[id], totalMinutes); });
+            const openDoors = computeOpenDoors(totalMinutes);
+            const openPairSet = new Set();
+            openDoors.forEach(d => { openPairSet.add(`${d.from}|${d.to}`); openPairSet.add(`${d.to}|${d.from}`); });
+
+            const altarEntranceAngle = getAltarEntranceAngle(totalMinutes);
+            const allIds = Object.keys(ROOMS);
+
+            for (let i=0; i<allIds.length; i++) {
+                for (let j=i+1; j<allIds.length; j++) {
+                    const idA = allIds[i], idB = allIds[j];
+                    if (!arePotentiallyConnected(idA, idB)) continue;
+                    let alignedFlag = false;
+                    if ((idA === "altar" && ROOMS[idB].type === "planet") || (idB === "altar" && ROOMS[idA].type === "planet")) {
+                        const planetId = idA === "altar" ? idB : idA;
+                        if (isAligned(angles[planetId], altarEntranceAngle)) alignedFlag = true;
+                    } else {
+                        if (isAligned(angles[idA], angles[idB])) alignedFlag = true;
+                    }
+                    if (!alignedFlag) continue;
+
+                    const isOpen = openPairSet.has(`${idA}|${idB}`);
+                    const getPos = (roomId) => {
+                        const r = ROOMS[roomId];
+                        let rad = radiusPlanet;
+                        if (r.type === "season") rad = radiusSeason;
+                        else if (r.type === "zodiac") rad = radiusZodiac;
+                        else if (r.type === "planet") rad = radiusPlanet;
+                        else rad = radiusAltar;
+                        const ang = angles[roomId] * Math.PI / 180;
+                        return { x: centerX + rad * Math.cos(ang), y: centerY + rad * Math.sin(ang) };
+                    };
+                    const pA = getPos(idA);
+                    const pB = getPos(idB);
+                    ctx.beginPath();
+                    ctx.moveTo(pA.x, pA.y);
+                    ctx.lineTo(pB.x, pB.y);
+                    ctx.lineWidth = 2.5;
+                    ctx.strokeStyle = isOpen ? "#2b9348" : "#cbd5e1";
+                    ctx.setLineDash(isOpen ? [] : [6, 6]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+
+            function drawRoom(roomId, x, y, bgColor, label, locked) {
+                ctx.beginPath();
+                ctx.arc(x, y, 13, 0, 2*Math.PI);
+                ctx.fillStyle = bgColor;
+                ctx.fill();
+                ctx.strokeStyle = "#2c3e50";
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+                ctx.fillStyle = "#0f172a";
+                ctx.font = `bold ${Math.max(11, Math.floor(size/38))}px "Segoe UI", "JetBrains Mono"`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(label, x, y);
+                if (locked) {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 16, 0, 2*Math.PI);
+                    ctx.strokeStyle = "#c2410c";
+                    ctx.lineWidth = 1.8;
+                    ctx.stroke();
+                }
+            }
+
+            for (let id of allIds) {
+                const room = ROOMS[id];
+                let rad = radiusPlanet;
+                if (room.type === "season") rad = radiusSeason;
+                else if (room.type === "zodiac") rad = radiusZodiac;
+                else if (room.type === "planet") rad = radiusPlanet;
+                else rad = radiusAltar;
+                const angleRad = angles[id] * Math.PI / 180;
+                const x = centerX + rad * Math.cos(angleRad);
+                const y = centerY + rad * Math.sin(angleRad);
+                const locked = isRoomLocked(id, totalMinutes);
+                let bgColor = "#f1f5f9";
+                if (room.type === "season") bgColor = "#b8e1c9";
+                if (room.type === "zodiac") bgColor = "#c9e0f2";
+                if (room.type === "planet") bgColor = "#fed7aa";
+                if (room.type === "altar") bgColor = "#fbc4ab";
+                if (locked) bgColor = "#e2e8f0";
+                drawRoom(id, x, y, bgColor, room.name, locked);
+            }
+
+            const altarX = centerX + radiusAltar * Math.cos(altarEntranceAngle * Math.PI/180);
+            const altarY = centerY + radiusAltar * Math.sin(altarEntranceAngle * Math.PI/180);
+            const arrowLen = 22;
+            const arrowAngleRad = altarEntranceAngle * Math.PI/180;
+            const tipX = altarX + arrowLen * Math.cos(arrowAngleRad);
+            const tipY = altarY + arrowLen * Math.sin(arrowAngleRad);
+            ctx.beginPath();
+            ctx.moveTo(altarX, altarY);
+            ctx.lineTo(tipX, tipY);
+            ctx.strokeStyle = "#d97706";
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+            const angle1 = arrowAngleRad + 2.2;
+            const angle2 = arrowAngleRad - 2.2;
+            const side = 8;
+            const p1 = { x: tipX - side * Math.cos(angle1), y: tipY - side * Math.sin(angle1) };
+            const p2 = { x: tipX - side * Math.cos(angle2), y: tipY - side * Math.sin(angle2) };
+            ctx.beginPath();
+            ctx.moveTo(tipX, tipY);
+            ctx.lineTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.fillStyle = "#b45309";
+            ctx.fill();
+        }
+
+        function updateInfoPanel(totalMinutes) {
+            const openDoors = computeOpenDoors(totalMinutes);
+            const activeRooms = getActiveRooms(openDoors, totalMinutes);
+            const hour = Math.floor(totalMinutes / 60) % 24;
+            const minute = totalMinutes % 60;
+            const timeStr = `${hour.toString().padStart(2,'0')}:${minute.toString().padStart(2,'0')}`;
+            document.getElementById('displayTime').innerHTML = `⏳ 时轮 · ${timeStr}`;
+
+            const special = isSpecialTime(totalMinutes);
+            const nightNote = special 
+                ? "🌙 夜祷时刻 (21:00-6:00): 房间静止 · 冬·双鱼·C·祭祀台 完全直通(水平)！" 
+                : "☀️ 常规时段 · 所有房间动态旋转，角度对齐则开门";
+            document.getElementById('timeSpecialNote').innerHTML = nightNote;
+
+            const doorListUl = document.getElementById('openDoorsList');
+            if (openDoors.length === 0) {
+                doorListUl.innerHTML = '<li>🔒 万门沉寂，无通路共鸣</li>';
+            } else {
+                doorListUl.innerHTML = openDoors.map(d => `<li>🚪 ${d.fromName} ⇄ ${d.toName} 门扉共鸣</li>`).join('');
+            }
+
+            const activeUl = document.getElementById('activeRoomsList');
+            if (activeRooms.length === 0) {
+                activeUl.innerHTML = '<li>⚠️ 无可踏入之地</li>';
+            } else {
+                activeUl.innerHTML = activeRooms.map(r => `<li>✨ ${r.name} (${r.type === 'season'?'四季':r.type==='zodiac'?'星座':r.type==='planet'?'行星·英文':'圣所'})</li>`).join('');
+            }
+
+            drawMap(totalMinutes);
+        }
+
+        function parseTimeToMinutes(timeStr) {
+            const [hour, minute] = timeStr.split(':').map(Number);
+            return (hour % 24) * 60 + minute;
+        }
+
+        function refreshFromInput() {
+            const timeInput = document.getElementById('timeInput').value;
+            let minutes = parseTimeToMinutes(timeInput);
+            updateInfoPanel(minutes);
+        }
+
+        document.getElementById('applyTimeBtn').addEventListener('click', refreshFromInput);
+        window.addEventListener('resize', () => {
+            const minutes = parseTimeToMinutes(document.getElementById('timeInput').value);
+            updateInfoPanel(minutes);
+        });
+        refreshFromInput();
+    })();
+</script>
+</body>
+</html>
